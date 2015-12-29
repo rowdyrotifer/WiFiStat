@@ -1,0 +1,169 @@
+#!/usr/bin/env python
+import argparse
+import os
+import socket
+from argparse import RawTextHelpFormatter
+import subprocess
+from sys import platform
+import time
+if platform == "darwin": platform = "osx"
+import sys
+
+prefix_throughput = "[Throughput] "
+prefix_latency = "[Latency] "
+
+parser = argparse.ArgumentParser(description="Collect and analyze WiFi LAN network speeds.",
+                                 epilog="Project home page:\n  http://marklalor.com/projects/wifistat\nGitHub:\n  http://github.com/MarkLalor/WifiStat",
+                                 formatter_class=RawTextHelpFormatter)
+
+def print_verbose(string):
+    if args.verbose:
+        print string
+
+#Simple wrapper around subprocess to run commands...
+def cmd(subprocess_args, short=True, use_shell=False):
+    if short:
+        return subprocess.Popen(subprocess_args, stdout=subprocess.PIPE, shell=use_shell).communicate()[0].rstrip()
+    else:
+        return subprocess.Popen(subprocess_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=use_shell).communicate()
+    
+def wait(prefix):
+    if sys.version_info[0] == 2:
+        raw_input(prefix + "Press enter to continue...")
+    else:
+        input(prefix + "Press enter to continue...")
+
+def get_best_network_name():
+    if platform == "osx":
+        return cmd(["/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk '/ SSID/ {print substr($0, index($0, $2))}'"], use_shell=True)
+    else:
+        return "network"
+
+def is_valid_ip(ip):
+    try: socket.inet_aton(ip); return True
+    except socket.error: return False
+
+def get_best_ping_ip():
+    if platform == "osx":
+        return cmd(["netstat -rn | grep default | awk '{print $2}'"], use_shell=True)
+    else:
+        return "8.8.8.8"
+
+def getspeedtest_server():
+    return cmd(["speedtest-cli --list | sed -n 3p | awk 'BEGIN { OFS = \")\"} {print $1}' | sed s'/)//g'"], use_shell=True)
+
+#Get info about the method to actually be used for the test.
+parser.add_argument('--iperf', help='iperf server IP to run the test.')
+parser.add_argument('--iperfport', default=5001, type=int, help='Specify an alternative iperf server port.')
+parser.add_argument('--speedtest', nargs='?', default=-1, help='Specify a speedtest-cli server id to run the test (see speedtest-cli --list, defaults to first one).')
+parser.add_argument('--ping', nargs='?', default=-1, help='IP to be pinged in order to test latency.')
+
+#Get info on how to log the data (WiFi network name and location may wish to be recorded)
+parser.add_argument('-n', '--network', help='Manually specify the name of this network (default on OS X is the connected WiFi SSID, "network" otherwise).')
+parser.add_argument('-l', '--location', default='nolocation', help='Name of location to log speed for (e.g. "basement"), defaults to "nolocation".')
+
+#Other ease of use options
+parser.add_argument('-t', '--trials', default=5, type=int, help='Number of trials to run for this location.')
+parser.add_argument('-d', '--delay', default=0, type=int, help='Delay between trials.')
+parser.add_argument('-p', '--prompt', action='store_true', help='Prompt for [ENTER] keypress between trials.')
+parser.add_argument('-v', '--verbose', action='store_true', help='Increase output verbosity')
+
+args = parser.parse_args()
+
+#Get a network name from 
+if args.network is None:
+    print_verbose("Automatically detecting a network name from SSID...")
+    args.network = get_best_network_name()
+print "Network name: " + args.network
+
+#Get an IP to test pings
+if args.ping is None:
+    print_verbose("Automatically detecting a latency test IP...")
+    args.ping = get_best_ping_ip()
+elif args.ping == -1:
+    print_verbose("Not testing latency/ping.")
+if not args.ping is None and args.ping != -1:
+    print "Latency ping test IP: " + str(args.ping) 
+    
+#Check that iperf ip is valid
+if args.iperf:
+    if not is_valid_ip(args.iperf):
+        sys.exit("Invalid iperf IP given: " + args.iperf)
+#Check that the ping ip is valid
+if args.ping != -1:
+    if not is_valid_ip(args.ping):
+        sys.exit("Invalid ping IP given: " + args.ping)
+        
+#Handle the eight possible combinations.
+#At least one of speedtest, iperf, or ping must be selected.
+#args.speedtest == -1 indicates that the --speedtest flag was supplied but no args were given whereas
+#args.speedtest, args.iperf, or args.ping == None indicates that the flag was not suppied at all
+method = "nothroughput"
+if args.iperf is None and args.speedtest == -1 and args.ping == -1:
+    sys.exit("No test method was chosen. Use --iperf --speedtest and --ping. You cannot use both --iperf and --speedtest. See --help for more details.")
+elif args.iperf is None and not args.speedtest == -1:
+    method="speedtest"
+    if args.speedtest is None:
+        print_verbose("Automatically choosing a speedtest server.")
+        args.speedtest = getspeedtest_server();
+    print "Throughput speedtest server ID: " + args.speedtest
+elif not args.iperf is None and args.speedtest == -1:
+    method="iperf"
+    print "Throughput iperf server IP: " + args.iperf
+elif not args.iperf is None and not args.speedtest == -1:
+    sys.exit("Cannot use both speedtest-cli and iperf to test. Specify only one or the other.")
+else:
+    print "Not testing throughput (why not? Use --iperf or --speedtest)"
+
+print ""
+
+#Print all the args if in verbose mode.
+print_verbose("Beginning test with the following parameters:")
+for key, value in vars(args).iteritems():
+    print_verbose("  " + key + ": " + str(value))
+
+def iperf_run(ip):
+    print prefix_throughput + "Testing with iperf server at " + ip
+    result = cmd(["iperf", "-c", ip, "-f", "m", "-p", str(args.iperfport)], short=False)
+    if "failed" in result[0]:
+        sys.exit("Failed to connect to iperf server at " + args.iperf)
+    else:
+        return result[0].splitlines()[6].split()[6] 
+
+def ping_run(ip):
+    print prefix_latency + "Pinging server at " + ip
+    return float(cmd(["ping", "-c", "1", ip]).splitlines()[1].split()[6][5:])
+    
+def log(datatype, location, value):
+    filename = args.network + "/" + location + "." + datatype
+    if not os.path.exists(args.network):
+        os.mkdir(args.network)
+    with open(filename, "a+") as datafile:
+        datafile.write(str(value) + "\n")
+
+###THROUGHPUT TEST###
+for i in range(args.trials):
+    if method == "speedtest":
+        pass
+    elif method == "iperf":
+        print prefix_throughput + "iperf test " + str(i+1) + "/" + str(args.trials)
+        throughput = float(iperf_run(args.iperf))
+        log("throughput", args.location, throughput)
+        print prefix_throughput + str(throughput) + " megabits/second."
+        if not args.delay == 0:
+            print prefix_throughput + str(args.delay) + "-second delay."
+        if args.prompt:
+            wait(prefix_throughput)
+             
+###LATENCY TEST###
+for i in range(args.trials):      
+    if args.ping != -1:
+        print prefix_latency + "ping test " + str(i+1) + "/" + str(args.trials)
+        ping = ping_run(args.ping)
+        log("latency", args.location, ping)
+        print prefix_latency + str(ping) + " milliseconds."
+        if not args.delay == 0:
+            print prefix_latency + str(args.delay) + "-second delay."
+            time.sleep(args.delay)
+        if args.prompt:
+            wait(prefix_latency)

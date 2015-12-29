@@ -1,0 +1,3 @@
+#ignore subdirectories
+*/*
+.DS_Store

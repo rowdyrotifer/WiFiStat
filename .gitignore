@@ -1,3 +1,5 @@
 #ignore subdirectories
-*/*
+data/
+.project
+.pydevproject
 .DS_Store

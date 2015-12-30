@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>WiFiStat Data Page</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="web/style.css">
+		<script src = "web/script.js"></script>
+	</head>
+	<body>		
+		<header id="header">
+			<div class="padded">
+				<h1>WiFiStat</h1>
+			</div>
+		</header>
+		<div id="wrapper">
+			<div id="content">
+				<!-- <div class="padded">
+					<h1>Heading</h1>
+					test
+				</div> -->
+			</div>
+			<nav id="nav">
+				<div class="padded">
+					<h3>Collect Data</h3>
+					<ul>
+						<li><a data-page="collect/test" href="#">Test Throughput and Latency</a></li>
+						<li><a data-page="collect/manage"href="#">Manage Locations</a></li>
+						<li><a data-page="collect/view" href="#">View Collected Data</a></li>
+					</ul>
+					<h3>Process Data</h3>
+					<ul>
+						<li><a data-page="process/generate" href="#">Generate and View Report</a></li>
+						<li><a data-page="process/delete" href="#">Delete Data</a></li>
+					</ul>
+					<h3>View Help</h3>
+					<ul>
+						<li><a data-page="help/instructions" href="#">General Instructions</a></li>
+						<li><a data-page="help/cli" href="#">Command Line Interface</a></li>
+						<li><a data-page="help/collecting" href="#">Collecting Data</a></li>
+						<li><a data-page="help/processing"href="#">Processing Data</a></li>
+					</ul>
+					<h3>About</h3>
+					<ul>
+						<li><a href="#">Project Homepage</a></li>
+						<li><a href="http://github.com/MarkLalor/WiFiStat">GitHub Page</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+	</body>
+</html>

@@ -14,6 +14,18 @@ $(function(){
 		}
 	});
 	
+	$("#shutdown").click(function(){
+		$.get( "./", { shutdown: "true" } ).done(function( data ) {
+		    response = JSON.parse(data);
+		    if (response[0] == "shutdown")
+	    	{
+		    	//location.reload();
+		    	window.open('','_self').close();
+	    	}
+		    else
+		    	alert("The server could not be shut down...");
+		  });
+	})
 	
 	$(".page").hide();
 })

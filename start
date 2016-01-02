@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+python "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/src/wifistat.py" --server

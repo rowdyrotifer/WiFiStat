@@ -21,6 +21,7 @@ class Const:
 class WiFiStatRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def do_GET(self):
         WiFiStat.Instance().print_verbose('\n'.join("%s: %s" % item for item in vars(self).items()))
+        
         if self.path == '/':
             self.path = 'web/main.html'
         return SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
@@ -43,6 +44,9 @@ class WiFiStat:
     def start_server(self, port):
         if port is None:
             port = 8000
+        
+        #Use the working directory one level above the wifistat.py file.
+        os.chdir(os.path.dirname(os.path.realpath(sys.argv[0])) + "/../")
         
         tcpserver = server.WiFiStatTCPServer(("", port), server.WiFiStatRequestHandler)
         

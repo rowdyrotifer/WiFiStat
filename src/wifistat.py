@@ -1,7 +1,6 @@
 import os
 from os import listdir
 from os.path import isfile, join
-from pip import locations
 import time
 import sys
 import utility
@@ -23,7 +22,7 @@ class WiFiStatRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def do_GET(self):
         WiFiStat.Instance().print_verbose('\n'.join("%s: %s" % item for item in vars(self).items()))
         if self.path == '/':
-            self.path = '../web/main.html'
+            self.path = 'web/main.html'
         return SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
     
 class WiFiStatTCPServer(SocketServer.TCPServer):
@@ -209,8 +208,6 @@ class WiFiStat:
             print string
 
 
-    
-
 def median(values):
     if len(values) % 2 == 0:
         return (values[(len(values)/2)-1] + values[len(values)/2])/2
@@ -226,5 +223,6 @@ def five_number_summary(values):
     return {"min": fns_min, "q1": fns_q1, "median": fns_median, "q3": fns_q3, "max": fns_max}
                
 if __name__ == '__main__':
+    print "sys.argv: " + str(sys.argv)
     inst = WiFiStat()
     inst.run()

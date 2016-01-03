@@ -46,7 +46,7 @@ class WiFiStatRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(results))
         else:
             if self.path == '/':
-                self.path = '../web/main.html'
+                self.path = 'src/web/main.html'
             return SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
     
 class WiFiStatTCPServer(SocketServer.TCPServer):

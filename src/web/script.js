@@ -1,9 +1,13 @@
 $(function(){
+	//Load each of the pages.
 	$("#nav li a").each(function(){
 		var page = $(this).attr("data-page");
 		if (typeof page !== typeof undefined && page !== false)
-			$("#content").append($('<div />', { "class": 'padded page', "id": "page-" + page.split("/")[1] }).load("web/pages/" + page + ".html"))
+			$("#content").append($('<div />', { "class": 'padded page', "id": "page-" + page.split("/")[1] }).load("src/web/pages/" + page + ".html"))
 	});
+	
+	//Hide all and then show the default.
+	$(".page").hide(function(){$("a[data-default='true']").click();});
 	
 	$("#nav li a").click(function(){
 		var page = $(this).attr("data-page");
@@ -26,6 +30,4 @@ $(function(){
 		    	alert("The server could not be shut down...");
 		  });
 	})
-	
-	$(".page").hide();
 })

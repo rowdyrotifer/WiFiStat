@@ -1,2 +1,53 @@
-<h1>Test Throughput and Latency</h1>
-This page has not yet been created.
+<h1>Test Throughput</h1>
+<h3>iperf</h3>
+<div class = "box">
+	<table>
+		<tr>
+			<td><label>Server IP</label></td>
+			<td><input type = "text" id = "test-iperf-ip" style = "width: 10em;"/></td>
+		</tr>
+		<tr>
+			<td><label>Server Port</label></td>
+			<td><input type = "text" id = "test-iperf-port" style = "width: 3em;" placeholder="5001"/></td></tr>
+		<tr>
+			<td><label>Number of Tests</label></td>
+			<td><input type = "text" id = "test-iperf-number" style = "width: 2em;" placeholder="25"/></td></tr>
+		<tr>
+			<td><input type = "button" id = "test-iperf-start" value = "Start iperf" /></td>
+		</tr>
+	</table>
+</div>
+<h3>speedtest-cli</h3>
+<div class = "box">
+	<table>
+		<tr>
+			<td><label>Server ID</label></td>
+			<td><input type = "text" id = "test-speedtest-cli-id" style = "width: 5em;"/></td>
+			<td><input type = "button" id = "test-speedtest-cli-server" value = "Get Closest Server" /></td>
+		<tr>
+			<td><label>Number of Tests</label></td>
+			<td><input type = "text" id = "test-speedtest-cli-number" style = "width: 2em;" placeholder="25"/></td>
+		</tr>
+		<tr>
+			<td><input type = "button" id = "test-speedtest-cli-start" value = "Start speedtest-cli" /></td>
+		</tr>
+	</table>
+</div>
+<h1>Test Latency</h1>
+<h3>ping</h3>
+<div class = "box">
+	<table>
+		<tr>
+			<td><label>Server IP</label></td>
+			<td><input type = "text" id = "test-ping-ip" style = "width: 10em;"/></td>
+			<td><input type = "button" id = "test-speedtest-cli-server" value = "Get Best Server" /></td>
+		</tr>
+		<tr>
+			<td><label>Number of Tests</label></td>
+			<td><input type = "text" id = "test-ping-number" style = "width: 2em;" placeholder="25"/></td>
+			</tr>
+		<tr>
+			<td><input type = "button" id = "test-ping-start" value = "Start ping" /></td>
+		</tr>
+	</table>
+</div>

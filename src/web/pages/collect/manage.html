@@ -1,2 +1,43 @@
 <h1>Manage Locations</h1>
-This page has not yet been created.
+<div class = "box">
+	<table>
+		<tr>
+			<td><label>Select a network: </label></td>
+			<td><select id = "manage-network-select" style = "width: 9.6em;"></select></td>
+			<td><input type = "button" id = "manage-network-refresh" value = "Refresh" /></td>
+		</tr>
+	</table>
+</div>
+<h3>Locations for Selected Network</h3>
+<div class = "container">
+	<table>
+		<thead>
+			<tr>
+				<td>Location Name</td>
+				<td>Throughput Tests</td>
+				<td>Latency Tests</td>
+				<td>Delete?</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Basement</td>
+				<td>4</td>
+				<td>20</td>
+				<td><input type = "button" id = "manage-network-refresh" value = "Delete" /></td>
+			</tr>
+			<tr>
+				<td>Kitchen</td>
+				<td>44</td>
+				<td>30</td>
+				<td><input type = "button" id = "manage-network-refresh" value = "Delete" /></td>
+			</tr>
+			<tr>
+				<td>Closet</td>
+				<td>42</td>
+				<td>10</td>
+				<td><input type = "button" id = "manage-network-refresh" value = "Delete" /></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

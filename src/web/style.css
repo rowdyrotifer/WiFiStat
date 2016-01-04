@@ -77,12 +77,29 @@ body
 	padding-bottom: 4px;
 }
 
+.container
+{
+	border: 3px double #768f99;
+	border-radius: 3px;
+	margin-left: 4px;
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 5px;
+	padding-bottom: 4px;
+	display: table;
+}
+
+.container td
+{
+	padding: 3px;
+}
+
 .box label
 {
 	color: #051a1e;
 }
 
-.box input[type='button']
+input[type='button'], select
 {
 	-webkit-box-shadow:rgba(0,0,0,0.0.1) 0 1px 0 0;
 	-moz-box-shadow:rgba(0,0,0,0.0.1) 0 1px 0 0;
@@ -100,7 +117,7 @@ body
 	-webkit-border-radius: 3px
 }
 
-.box input[type='button']:hover
+input[type='button']:hover
 {
 	color:#061e23;
 	background-color:#eaedfd;

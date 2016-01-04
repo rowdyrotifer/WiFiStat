@@ -30,6 +30,7 @@ body
 	top: 4px;
 	background: #eef1fc;
 	border-right: 4px double #939393;
+	overflow-y: auto;
 }
 
 #nav ul

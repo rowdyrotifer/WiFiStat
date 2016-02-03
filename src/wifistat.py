@@ -50,7 +50,7 @@ class WiFiStat:
         
         tcpserver = server.WiFiStatTCPServer(("", port), server.WiFiStatRequestHandler)
         
-        print "Serving at http://localhost:" + str(port)
+        print("Serving at http://localhost:" + str(port))
         webbrowser.open("http://localhost:" + str(port))
         tcpserver.serve_forever()
         
@@ -75,7 +75,7 @@ class WiFiStat:
             self.print_verbose("Automatically detecting a network name from SSID...")
             self.args.network = utility.get_best_network_name()
         if not self.args.process:
-            print "Network name: " + str(self.args.network)
+            print("Network name: " + str(self.args.network))
         
         #Get an IP to ping test for latency.
         if self.args.ping is None:
@@ -84,7 +84,7 @@ class WiFiStat:
         elif self.args.ping == -1:
             self.print_verbose("Not testing latency/ping.")
         if not self.args.ping is None and self.args.ping != -1:
-            print "Latency ping test IP: " + str(self.args.ping) 
+            print("Latency ping test IP: " + str(self.args.ping)) 
         
         #Arguments summary
         self.print_verbose("Arguments processed:")
@@ -110,16 +110,16 @@ class WiFiStat:
             if self.args.speedtest is None:
                 self.print_verbose("Automatically choosing a speedtest server.")
                 self.args.speedtest = utility.getspeedtest_server();
-            print "Throughput speedtest server ID: " + self.args.speedtest
+            print("Throughput speedtest server ID: " + self.args.speedtest)
         elif not self.args.iperf is None and self.args.speedtest == -1:
             method="iperf"
-            print "Throughput iperf server IP: " + self.args.iperf
+            print("Throughput iperf server IP: " + self.args.iperf)
         elif not self.args.iperf is None and not self.args.speedtest == -1:
             sys.exit("Cannot use both speedtest-cli and iperf to test. Only specify one.")
         else:
             self.print_verbose("Not testing throughput/speed.")
             
-        if not self.args.process: print ""
+        if not self.args.process: print("")
         
         #Print all the args if in verbose mode.
         self.print_verbose("Running WiFiStat with the following parameters:")
@@ -130,41 +130,41 @@ class WiFiStat:
             if method == "speedtest":
                 pass
             elif method == "iperf":
-                print Const.throughput + "iperf test " + str(i+1) + "/" + str(self.args.trials)
+                print(Const.throughput + "iperf test " + str(i+1) + "/" + str(self.args.trials))
                 throughput = float(self.iperf_run(self.args.iperf))
                 self.log("throughput", self.args.location, throughput)
-                print Const.throughput + str(throughput) + " megabits/second."
+                print(Const.throughput + str(throughput) + " megabits/second.")
                 if not self.args.delay == 0:
-                    print Const.throughput + str(self.args.delay) + "-second delay."
+                    print(Const.throughput + str(self.args.delay) + "-second delay.")
                 if self.args.prompt:
                     utility.wait(Const.throughput)
                      
         ##### LATENCY TEST #####  
         if self.args.ping != -1:
             for i in range(self.args.trials):    
-                print Const.latency + "ping test " + str(i+1) + "/" + str(self.args.trials)
+                print(Const.latency + "ping test " + str(i+1) + "/" + str(self.args.trials))
                 ping = self.ping_run(self.args.ping)
                 self.log("latency", self.args.location, ping)
-                print Const.latency + str(ping) + " milliseconds."
+                print(Const.latency + str(ping) + " milliseconds.")
                 if not self.args.delay == 0:
-                    print Const.latency + str(self.args.delay) + "-second delay."
+                    print(Const.latency + str(self.args.delay) + "-second delay.")
                     time.sleep(self.args.delay)
                 if self.args.prompt:
                     utility.wait(Const.latency)
                     
         ##### PROCESS TEST DATA #####
         if self.args.process:
-            print "Processing collected data."
+            print("Processing collected data.")
             if not os.path.exists(Const.data_directory):
                 sys.exit("No data to process. Use --iperf, --speedtest, or --ping to collect data about network throughput and latency.")
             networks = [x[0] for x in os.walk(Const.data_directory)][1:]
             for network in networks:
-                print "Processing data from " + network
+                print("Processing data from " + network)
                 filenames = [f.split(".")[0] for f in listdir(network) if isfile(join(network, f))]
                 locations = []
                 [locations.append(item) for item in filenames if item not in locations]
                 for location in locations:
-                    print '  Processing data for location "' + location + '"'
+                    print('  Processing data for location "' + location + '"')
                     with open(network + "/" + location + ".throughput") as f:
                         throughputs = sorted([float(i) for i in f.read().splitlines()])
                     self.print_verbose("  Throughputs: " + str(throughputs))
@@ -175,14 +175,14 @@ class WiFiStat:
                     fns_throughput = five_number_summary(throughputs)
                     fns_latency = five_number_summary(latencies)
                     
-                    print "  " + str(fns_throughput)
-                    print "  " + str(fns_latency)
+                    print("  " + str(fns_throughput))
+                    print("  " + str(fns_latency))
 
     ##### TEST FUNCTIONS #####
     
     ### IPERF ###
     def iperf_run(self, ip):
-        print Const.throughput + "Testing with iperf server at " + ip
+        print(Const.throughput + "Testing with iperf server at " + ip)
         result = utility.cmd(["iperf", "-c", ip, "-f", "m", "-p", str(self.args.iperfport)], short=False)
         if "failed" in result[0]:
             sys.exit("Failed to connect to iperf server at " + self.args.iperf)
@@ -195,7 +195,7 @@ class WiFiStat:
 
     ### PING ###
     def ping_run(self, ip):
-        print Const.latency + "Pinging server at " + ip
+        print(Const.latency + "Pinging server at " + ip)
         return float(utility.cmd(["ping", "-c", "1", ip]).splitlines()[1].split()[6][5:])
 
     ### LOG TESTS ###
@@ -209,7 +209,7 @@ class WiFiStat:
     #Only prints if the --verbose flag is specified. 
     def print_verbose(self, string):
         if self.args.verbose:
-            print string
+            print(string)
 
 
 def median(values):
@@ -227,6 +227,6 @@ def five_number_summary(values):
     return {"min": fns_min, "q1": fns_q1, "median": fns_median, "q3": fns_q3, "max": fns_max}
                
 if __name__ == '__main__':
-    print "sys.argv: " + str(sys.argv)
+    print("sys.argv: " + str(sys.argv))
     inst = WiFiStat()
     inst.run()
